@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import schedule
-from flask import Flask, Response, request, send_file
+from flask import Flask, Response, request, send_file 
 from yt_dlp import YoutubeDL
 from feedgen.feed import FeedGenerator
 
@@ -22,6 +22,16 @@ def download_from_youtube(video_id):
     with YoutubeDL(ydl_opts) as ydl:
         ydl.download([f"http://www.youtube.com/watch?v={video_id}"])
 
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    return '''
+        <form method="post">
+            <label for="name">video id:</label>
+            <input type="text" id="id" name="id">
+        <button type="button" onclick="window.location.href='/mp3/' + document.getElementById('id').value;">mp3</button>
+        <button type="button" onclick="window.location.href='/feed/' + document.getElementById('id').value;">Feed</button>
+        </form>
+    '''
 @app.route("/mp3/<video_id>")
 def stream_mp3(video_id):
     file_path = Path(tempfile.gettempdir()) / f"{video_id}.mp3"
